@@ -15,11 +15,8 @@ import windowFilter from './filter/window';
 import nodeFilter from './filter/node';
 import makeBlacklistFilter from './filter/blacklist';
 
-import {Reporter, ReporterOptions, defaultReporter} from './reporter/reporter';
+import {Reporter, ReporterOptions} from './reporter/reporter';
 import fetchReporter from './reporter/fetch';
-import nodeReporter from './reporter/node';
-import xhrReporter from './reporter/xhr';
-import jsonpReporter from './reporter/jsonp';
 
 import {historian, getHistory} from './historian';
 
@@ -56,7 +53,7 @@ class Client {
         this.opts.timeout = this.opts.timeout || 10000;
 
         this.processor = opts.processor || stacktracejsProcessor;
-        this.setReporter(opts.reporter || defaultReporter(opts));
+        this.setReporter();
 
         this.addFilter(ignoreFilter);
         this.addFilter(makeDebounceFilter());
@@ -113,23 +110,8 @@ class Client {
         historian.unregisterNotifier(this);
     }
 
-    private setReporter(name: string|Reporter): void {
-        switch (name) {
-        case 'fetch':
-            this.reporter = fetchReporter;
-            break;
-        case 'node':
-            this.reporter = nodeReporter;
-            break;
-        case 'xhr':
-            this.reporter = xhrReporter;
-            break;
-        case 'jsonp':
-            this.reporter = jsonpReporter;
-            break;
-        default:
-            this.reporter = name as Reporter;
-        }
+    private setReporter(): void {
+        this.reporter = fetchReporter;
     }
 
     addFilter(filter: Filter): void {
